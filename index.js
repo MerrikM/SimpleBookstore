@@ -3,13 +3,14 @@ const { v4: uuid } = require('uuid')
 
 class MyBook { // Описание структуры объекта
     constructor(title = "", description = "", authors = "",
-    favorite = "", fileCover = "", fileName = "", id = uuid()) {
+    favorite = "", fileCover = "", fileName = "", fileBook = "", d = uuid()) {
         this.title = title,
         this.description = description,
         this.authors = authors,
         this.favorite = favorite,
         this.fileCover = fileCover,
         this.fileName = fileName,
+        this.fileBook - fileBook,
         this.id = id
     }
 }
@@ -62,7 +63,7 @@ app.post('/api/mybook/', (request, response) => { // Создаем новую �
 })
 app.put('/api/mybook/:id', (request, response) => { // Обновление записей
     const {book} = store
-    const {title, description, authors, fileCover, fileName, favorite} = request.body
+    const {title, description, authors, fileCover, fileName, favorite, fileBook} = request.body
     const {id} = request.params
     const index = book.findIndex(element => element.id === id)
 
@@ -75,6 +76,7 @@ app.put('/api/mybook/:id', (request, response) => { // Обновление за
             favorite,
             fileCover,
             fileName,
+            fileBook,
         }
         response.json(book[index])
     }else {
