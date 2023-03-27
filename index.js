@@ -1,10 +1,19 @@
 const express = require('express')
 const { v4: uuid } = require('uuid')
+
+const app = express()
+
 const logger = require('./middleware/logger')
+const indexRouter = require('./routes/index')
+
+const error404 = require('./middleware/error-404')
+
+app.use(logger)
+app.use('/', indexRouter)
 
 class MyBook { // Описание структуры объекта
     constructor(title = "", description = "", authors = "",
-    favorite = "", fileCover = "", fileName = "", fileBook = "", d = uuid()) {
+    favorite = "", fileCover = "", fileName = "", fileBook = "", id = uuid()) {
         this.title = title,
         this.description = description,
         this.authors = authors,
@@ -23,7 +32,6 @@ const store = { // Объект для хранения данных
     ],
 }
 
-const app = express()
 app.use(express.json()) // принимаем информацию в формате json
 
 // Определяем таблицу маршрутизации для приложения
@@ -99,6 +107,7 @@ app.delete('/api/mybook/:id', (request, response) => {
     }
 })
 
+app.use(error404)
 
 const PORT = process.env.PORT || 3000
 app.listen(PORT)
