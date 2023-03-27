@@ -3,24 +3,28 @@ const { v4: uuid } = require('uuid')
 
 const app = express()
 
+const error404 = require('./middleware/error-404')
+const file = require('./middleware/file')
 const logger = require('./middleware/logger')
 const indexRouter = require('./routes/index')
-
-const error404 = require('./middleware/error-404')
+const uploadRouter = require('./routes/uploadFile')
 
 app.use(logger)
+
+app.use('/public', express.static(__dirname + '/public'))
 app.use('/', indexRouter)
+app.use('/uploadFile', uploadRouter)
 
 class MyBook { // Описание структуры объекта
     constructor(title = "", description = "", authors = "",
-    favorite = "", fileCover = "", fileName = "", fileBook = "", id = uuid()) {
+    favorite = false, fileCover = "", fileName = "", fileBook = "", id = uuid()) {
         this.title = title,
         this.description = description,
         this.authors = authors,
         this.favorite = favorite,
         this.fileCover = fileCover,
         this.fileName = fileName,
-        this.fileBook - fileBook,
+        this.fileBook = fileBook,
         this.id = id
     }
 }
@@ -58,7 +62,20 @@ app.get('/api/mybook/:id', (request, response) => { // Возвращаем за
         response.status(404)
         response.json('404 | Страница не найдена')
     }
-}) 
+})
+app.get('/api/mybook/:id/download', (request, response) => {
+    const {book} = store
+    const {fileBook} = request.body
+    const {id} = request.params
+    const index = book.findIndex(element => element.id === id)
+    if(index !== -1) {
+        var file = __dirname + '/public/file/test.jpg'
+        response.download(file)
+    }else {
+        response.status(404)
+        response.json('404 | Страница не найдена')
+    }
+})
 
 app.post('/api/mybook/', (request, response) => { // Создаем новую запись
     const {book} = store
