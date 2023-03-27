@@ -1,5 +1,6 @@
 const express = require('express')
 const { v4: uuid } = require('uuid')
+const logger = require('./middleware/logger')
 
 class MyBook { // Описание структуры объекта
     constructor(title = "", description = "", authors = "",
