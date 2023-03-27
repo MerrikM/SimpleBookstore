@@ -53,9 +53,9 @@ app.get('/api/mybook/:id', (request, response) => { // Возвращаем за
 
 app.post('/api/mybook/', (request, response) => { // Создаем новую запись
     const {book} = store
-    const {title, description, authors, fileCover, fileName, favorite} = request.body
+    const {title, description, authors, fileCover, fileName, favorite, fileBook} = request.body
 
-    const newBook = new MyBook(title, description, authors, fileCover, fileName, favorite)
+    const newBook = new MyBook(title, description, authors, fileCover, fileName, favorite, fileBook)
     book.push(newBook)
 
     response.status(201)
