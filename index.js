@@ -4,16 +4,14 @@ const { v4: uuid } = require('uuid')
 const app = express()
 
 const error404 = require('./middleware/error-404')
-const file = require('./middleware/file')
 const logger = require('./middleware/logger')
 const indexRouter = require('./routes/index')
-const uploadRouter = require('./routes/uploadFile')
+const fileMulter = require('./middleware/file')
 
 app.use(logger)
 
 app.use('/public', express.static(__dirname + '/public'))
 app.use('/', indexRouter)
-app.use('/uploadFile', uploadRouter)
 
 class MyBook { // Описание структуры объекта
     constructor(title = "", description = "", authors = "",
@@ -69,27 +67,29 @@ app.get('/api/mybook/:id/download', (request, response) => {
     const {id} = request.params
     const index = book.findIndex(element => element.id === id)
     if(index !== -1) {
-        var file = __dirname + '/public/file/test.jpg'
-        response.download(file)
+        const path = (__dirname + '\\' + book[index].fileBook.path)
+        response.download(path)
     }else {
         response.status(404)
         response.json('404 | Страница не найдена')
     }
 })
 
-app.post('/api/mybook/', (request, response) => { // Создаем новую запись
+app.post('/api/mybook/', fileMulter.single('cover-img'), (request, response) => { // Создаем новую запись
+    if(request.file) {
     const {book} = store
-    const {title, description, authors, fileCover, fileName, favorite, fileBook} = request.body
-
+    const {title, description, authors, fileCover, fileName, favorite} = request.body
+    const fileBook = request.file
     const newBook = new MyBook(title, description, authors, fileCover, fileName, favorite, fileBook)
     book.push(newBook)
-
     response.status(201)
     response.json(newBook)
+    }
 })
-app.put('/api/mybook/:id', (request, response) => { // Обновление записей
+app.put('/api/mybook/:id', fileMulter.single('cover-img'), (request, response) => { // Обновление записей
     const {book} = store
-    const {title, description, authors, fileCover, fileName, favorite, fileBook} = request.body
+    const {title, description, authors, fileCover, fileName, favorite} = request.body
+    const fileBook = request.file
     const {id} = request.params
     const index = book.findIndex(element => element.id === id)
 
