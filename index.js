@@ -67,8 +67,9 @@ app.get('/api/mybook/:id/download', (request, response) => {
     const {id} = request.params
     const index = book.findIndex(element => element.id === id)
     if(index !== -1) {
+        const namefile = book[index].fileBook.filename
         const path = (__dirname + '\\' + book[index].fileBook.path)
-        response.download(path)
+        response.download(path, namefile)
     }else {
         response.status(404)
         response.json('404 | Страница не найдена')
