@@ -1,0 +1,1 @@
+# simple bookstore admin panel
